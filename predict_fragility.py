@@ -7,8 +7,8 @@ import cv2
 import matplotlib.pyplot as plt
 
 # --- Configuration ---
-MODEL_PATH = "c:/WareFlowAI/WareFlowAI-Forecasting/models/fragility_classifier.pth"
-IMAGE_PATH = "c:/WareFlowAI/WareFlowAI-Forecasting/data/product_images/man.jpg"
+MODEL_PATH = "models/fragility_classifier_new.pth"
+IMAGE_PATH = "data/product_images/man.jpg"
 IMG_SIZE = (224, 224)
 THRESHOLD = 0.4
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
