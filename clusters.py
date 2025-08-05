@@ -61,4 +61,4 @@ def run_inventory_clustering():
     cursor.close()
     conn.close()
 
-    return features_df  # Optional: return for inspection or API response
+    return features_df 

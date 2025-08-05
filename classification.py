@@ -50,7 +50,7 @@ plot_df = features_df.groupby('Cluster').apply(lambda x: x.sample(n=min(50, len(
 sns.set(style="whitegrid")
 plt.figure(figsize=(10, 6))
 sns.scatterplot(data=plot_df, x='TotalSales', y='DemandCV', hue='Cluster', palette='Set2', s=100)
-plt.title("📊 K-Means Clustering of Inventory SKUs (Sampled)")
+plt.title("K-Means Clustering of Inventory SKUs (Sampled)")
 plt.xlabel("Total Sales")
 plt.ylabel("Demand Variability (CV)")
 plt.legend(title="Cluster")

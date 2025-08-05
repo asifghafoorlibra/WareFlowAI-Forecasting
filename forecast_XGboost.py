@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from db_utils import get_connection, fetch_sales_data
 from config import CONFIG
 
-# 🧠 Feature Engineering
+# Feature Engineering
 def generate_features(df):
     df = df.copy()
     df['day_of_week'] = df['ds'].dt.dayofweek
@@ -20,7 +20,7 @@ def generate_features(df):
     df.dropna(inplace=True)
     return df
 
-# ⚙️ Train XGBoost Model
+# Train XGBoost Model
 def train_xgboost_model(df):
     df = generate_features(df)
     X = df.drop(columns=['ds', 'y'])
@@ -47,7 +47,7 @@ def train_xgboost_model(df):
     print(f"\nXGBoost Accuracy:\nMAE: {mae:.2f}, RMSE: {rmse:.2f}")
     return model, df, X_test, y_test, preds, mae, rmse
 
-# 📈 Forecast Future Demand
+# Forecast Future Demand
 def forecast_with_xgboost(model, df, forecast_days=30):
     last_known = df.tail(14).copy()
     future_dates = pd.date_range(start=last_known['ds'].max() + timedelta(days=1), periods=forecast_days)
@@ -74,7 +74,7 @@ def forecast_with_xgboost(model, df, forecast_days=30):
     forecast_df = pd.DataFrame(forecast_rows)
     return forecast_df[['ds', 'yhat']]
 
-# 📉 Plot Test Set Predictions
+# Plot Test Set Predictions
 def plot_test_predictions(X_test, y_test, preds, sku):
     plt.figure(figsize=(12, 6))
     plt.plot(y_test.index, y_test, label='Actual', marker='o')
@@ -87,7 +87,7 @@ def plot_test_predictions(X_test, y_test, preds, sku):
     plt.tight_layout()
     plt.show()
 
-# 🚀 Entry Point
+# Entry Point
 if __name__ == "__main__":
     sql_cfg = CONFIG["sql"]
     forecast_cfg = CONFIG["forecast"]
@@ -97,7 +97,7 @@ if __name__ == "__main__":
     df = fetch_sales_data(conn, sql_cfg["table"], sku)
 
     if df.empty:
-        print(f"⚠️ No sales data found for SKU: {sku}")
+        print(f"No sales data found for SKU: {sku}")
     else:
         df['ds'] = pd.to_datetime(df['ds'])
         df = df[df['y'] > 0]

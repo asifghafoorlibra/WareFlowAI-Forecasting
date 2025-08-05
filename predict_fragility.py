@@ -92,7 +92,7 @@ def predict_fragility(image_path):
         confidence = round(probs[0][pred_index].item() * 100, 2)
         label = LABEL_MAP[pred_index]
 
-    print(f"🧠 Prediction: {label} ({confidence}% confidence)")
+    print(f"Prediction: {label} ({confidence}% confidence)")
 
     if DEBUG:
         print("Raw logits:", output.cpu().numpy())

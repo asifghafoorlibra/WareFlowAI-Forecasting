@@ -24,7 +24,7 @@ transform = transforms.Compose([
 # --- Load Dataset ---
 dataset = ImageFolder(root=image_dir, transform=transform)
 label_map = {v: k for k, v in dataset.class_to_idx.items()}
-print("✅ Class labels:", label_map)
+print("Class labels:", label_map)
 
 dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
@@ -66,7 +66,7 @@ for epoch in range(num_epochs):
 model_path = "models/fragility_classifier_new.pth"
 os.makedirs(os.path.dirname(model_path), exist_ok=True)
 torch.save(model.state_dict(), model_path)
-print(f"✅ Model saved to {model_path}")
+print(f"Model saved to {model_path}")
 
 # --- Optional: Prediction Function ---
 def predict_image(image_path):
@@ -82,7 +82,7 @@ def predict_image(image_path):
         _, predicted = torch.max(output, 1)
         return label_map[int(predicted.item())]
     except Exception as e:
-        print(f"❌ Failed to process image: {image_path}\n   Reason: {e}")
+        print(f"Failed to process image: {image_path}\n   Reason: {e}")
         return None
 
 # Example usage (uncomment to test)
