@@ -26,3 +26,37 @@ def fetch_bulk_sales(conn, table, lookback_days=90):
         WHERE SaleDate >= DATEADD(DAY, -{lookback_days}, GETDATE())
     """
     return pd.read_sql(query, conn)
+
+def fetch_forecast_data(conn):
+    query = """
+        SELECT 
+            Id,
+            SKU,
+            ForecastDate,
+            ForecastedDemand,
+            ReorderPoint,
+            ModelUsed,
+            ConfidenceIntervalLow,
+            ConfidenceIntervalHigh,
+            CreatedAt
+        FROM ForecastResults  
+        ORDER BY ForecastDate DESC
+    """
+    return pd.read_sql(query, conn)
+
+
+def fetch_cluster_data(conn):
+    query = """
+        SELECT 
+            SKU,
+            TotalSales,
+            DemandCV,
+            DaysSold,
+            Cluster,
+            CreatedAt
+        FROM SKUClusters
+        ORDER BY CreatedAt DESC
+    """
+    df = pd.read_sql(query, conn)
+    df['CreatedAt'] = pd.to_datetime(df['CreatedAt'])
+    return df

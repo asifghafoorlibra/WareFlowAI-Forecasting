@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 # --- Configuration ---
 MODEL_PATH = "models/fragility_classifier_new.pth"
-IMAGE_PATH = "data/product_images/man.jpg"
+IMAGE_PATH = "data/product_images/glass.jpg"
 IMG_SIZE = (224, 224)
 THRESHOLD = 0.4
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -35,7 +35,7 @@ def load_model():
     return model
 
 # --- Grad-CAM ---
-def generate_gradcam(model, input_tensor, target_class):
+def generate_gradcam2(model, input_tensor, target_class):
     gradients = []
     activations = []
 
@@ -68,8 +68,41 @@ def generate_gradcam(model, input_tensor, target_class):
     cam = cam / cam.max()
     return cam
 
+def generate_gradcam(model, input_tensor, target_class):
+    gradients = []
+    activations = []
+
+    def forward_hook(module, input, output):
+        activations.append(output)
+
+    def backward_hook(module, grad_input, grad_output):
+        gradients.append(grad_output[0])
+
+    target_layer = model.layer4[-1].conv2
+    target_layer.register_forward_hook(forward_hook)
+    target_layer.register_backward_hook(backward_hook)
+
+    output = model(input_tensor)
+    loss = output[:, target_class]
+    model.zero_grad()
+    loss.backward()
+
+    # ✅ Detach tensors before converting to NumPy
+    grad = gradients[0].detach().cpu().numpy()[0]
+    act = activations[0].detach().cpu().numpy()[0]
+
+    weights = np.mean(grad, axis=(1, 2))
+    cam = np.zeros(act.shape[1:], dtype=np.float32)
+
+    for i, w in enumerate(weights):
+        cam += w * act[i]
+
+    cam = np.maximum(cam, 0)
+    cam = cv2.resize(cam, IMG_SIZE)
+    cam = cam / cam.max()
+    return cam
 # --- Visualization ---
-def show_gradcam(original_image, heatmap, alpha=0.4):
+def show_gradcam2(original_image, heatmap, alpha=0.4):
     img = np.array(original_image)
     heatmap = np.uint8(255 * heatmap)
     heatmap_color = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
@@ -80,6 +113,16 @@ def show_gradcam(original_image, heatmap, alpha=0.4):
     plt.title("Grad-CAM")
     plt.show()
 
+def show_gradcam(original_image, heatmap, alpha=0.4):
+    img = np.array(original_image.resize(IMG_SIZE))  # ✅ Resize to match heatmap
+    heatmap = np.uint8(255 * heatmap)
+    heatmap_color = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+    heatmap_color = cv2.cvtColor(heatmap_color, cv2.COLOR_BGR2RGB)
+    superimposed = heatmap_color * alpha + img
+    plt.imshow(superimposed.astype(np.uint8))
+    plt.axis('off')
+    plt.title("Grad-CAM")
+    plt.show()
 # --- Prediction ---
 def predict_fragility(image_path):
     model = load_model()

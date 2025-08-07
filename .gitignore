@@ -2,6 +2,7 @@ data/fragility/
 data/training/
 data/product_images/
 models/
+uploads/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
